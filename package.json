@@ -1,0 +1,17 @@
+{
+    "name": "socket-chat-example",
+    "version": "0.0.1",
+    "description": "my first socket.io app",
+    "dependencies": {
+        "browserify-middleware": "^8.1.1",
+        "express": "^4.15.2",
+        "socket.io": "^1.7.3"
+    },
+    "scripts": {
+        "start": "node index.js"
+    },
+    "engines": {
+        "node": "8.11.2",
+        "npm": "6.4.1"
+    }
+}
