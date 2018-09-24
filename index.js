@@ -111,7 +111,8 @@ io.sockets.on('connection', function(socket) {
 })
 
 app.get('/', function(req, res){
-    res.sendFile('index.html'); 
+    res.sendFile(__dirname + '/index.html');
+//    res.write("This is Test Message."); 
 });
 
 server.listen(port, function(){
