@@ -11,9 +11,11 @@ var UserManager = {
 
 io.sockets.on('connection', function(socket) {
     console.log("A User is connected, socketId = " + socket.id);
+    console.log(socket.handshake.headers);
     var object = {};
     object.type = 'welcome';
     object.id = socket.id;
+    object.socket = socket.handshake.headers;
     sendMessageToClient(socket, object);
     
     socket.on('message', function(data) { handleDataReceive(data, socket); });
