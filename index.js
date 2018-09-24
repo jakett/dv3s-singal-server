@@ -108,7 +108,11 @@ io.sockets.on('connection', function(socket) {
         console.log("EEEEEE dataSend = " + JSON.stringify(dataSend));
         socket.broadcast.emit('message', dataSend);
     }
-})  
+})
+
+app.get('/', function(req, res){
+    res.sendFile('index.html'); 
+});
 
 server.listen(port, function(){
   console.log('listening on *:' + port);
