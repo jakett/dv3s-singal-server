@@ -1,6 +1,6 @@
 var app = require('express')();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
 var port = process.env.PORT || 4000;
 
@@ -11,7 +11,6 @@ var UserManager = {
 
 io.sockets.on('connection', function(socket) {
     console.log("A User is connected, socketId = " + socket.id);
-    console.log(socket.handshake.headers['user-agent']);
     var object = {};
     object.type = 'welcome';
     object.id = socket.id;
@@ -47,12 +46,9 @@ io.sockets.on('connection', function(socket) {
                 
                 var object = {};
                 var user = {};
-                user.type_device = data.data.function;
-                user.os = data.data.os;
-                user.name = data.data.user;
+                user.type_device = data.data;
                 user.id = socket.id;
                 user.status = 'disconnected';
-                
                 UserManager.userList.push(user);
                 
                 UserManager.socketList.push(socket);
@@ -60,7 +56,6 @@ io.sockets.on('connection', function(socket) {
                 if(user.type_device === 'player') {
                     object.type = 'add_player';
                     object.id = socket.id;
-                    object.data = user;
                     sendMessageToGlobal(socket, object);
                 } else {
                     object.type = 'user_list';
@@ -105,16 +100,14 @@ io.sockets.on('connection', function(socket) {
     }
     
     function sendMessageToGlobal(socket, dataSend) {
-        console.log("EEEEEE dataSend = " + JSON.stringify(dataSend));
         socket.broadcast.emit('message', dataSend);
     }
-})
+})  
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
-//    res.write("This is Test Message."); 
 });
 
-server.listen(port, function(){
+http.listen(port, function(){
   console.log('listening on *:' + port);
 });
