@@ -76,7 +76,7 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'link':
                 console.log("link youtube: " + data.path);
-                sendLinkMp4ToClient(data.path);
+                sendLinkMp4ToClient(data.path, socket);
                 break;
             default:
         }
@@ -111,13 +111,19 @@ io.sockets.on('connection', function (socket) {
         socket.broadcast.emit('message', dataSend);
     }
 
-    function sendLinkMp4ToClient(link) {
+    function sendLinkMp4ToClient(link, socket) {
         ytdl.getInfo(link, (err, info) => {
             if(err) { throw err };
             const arr = info.formats.filter(item => item.container === 'mp4');
             const idx = getIndexOfMaxResolution(arr);
             const linkMp4 = arr[idx].url;
             console.log("TVT - linkMp4 = " + linkMp4);
+            const object = {
+                type: 'link',
+                data: linkMp4
+            }
+
+            sendMessageToClient(socket, object);
         })
     }
 
