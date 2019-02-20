@@ -5,7 +5,8 @@
     "dependencies": {
         "browserify-middleware": "^8.1.1",
         "express": "^4.15.2",
-        "socket.io": "^1.7.3"
+        "socket.io": "^1.7.3",
+        "ytdl-core": "^0.29.1"
     },
     "scripts": {
         "start": "node server.js"
