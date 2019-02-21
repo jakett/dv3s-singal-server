@@ -16,7 +16,8 @@ io.sockets.on('connection', function (socket) {
     // console.log(socket.handshake.headers);
     var object = {};
     object.type = 'welcome';
-    object.id = socket.id;
+    // object.id = socket.id;
+    object.id = 'Haaaaaaaaaa';
     object.socket = socket.handshake.headers;
     sendMessageToClient(socket, object);
 
