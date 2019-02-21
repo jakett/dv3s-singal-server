@@ -76,7 +76,7 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'link':
                 console.log("link youtube: " + data.path);
-                sendLinkMp4ToClient(data.path, socket);
+                // sendLinkMp4ToClient(data.path, socket);
                 sendMessageToClient(socket, { heeeee: 'haaaaaaaa'});
                 break;
             default:
