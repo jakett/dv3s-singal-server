@@ -74,10 +74,13 @@ io.sockets.on('connection', function (socket) {
                 break;
             case 'leave':
                 break;
-            case 'link':
+            case 'linkMp4':
                 console.log("link youtube: " + data.path);
                 // sendLinkMp4ToClient(data.path, socket);
-                sendMessageToClient(socket, { heeeee: 'haaaaaaaa'});
+                var object = {};
+                object.type = 'linkMp4';
+                object.data = data.data;
+                sendMessageToClient(socket, object);
                 break;
             default:
         }
