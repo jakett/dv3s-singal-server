@@ -68,8 +68,12 @@ io.sockets.on('connection', function (socket) {
                     object.id = socket.id;
                     sendMessageToGlobal(socket, object);
                 } else {
-                    object.type = 'user_info';
-                    object.data = UserManager.userList;
+                    // object.type = 'user_info';
+                    // object.data = UserManager.userList;
+                    // sendMessageToClient(socket, object);
+                    var object = {};
+                    object.type = 'linkMp4';
+                    object.data = data.data;
                     sendMessageToClient(socket, object);
                 }
                 break;
@@ -116,7 +120,7 @@ io.sockets.on('connection', function (socket) {
 
     function sendLinkMp4ToClient(link, socket) {
         ytdl.getInfo(link, (err, info) => {
-            if(err) { throw err };
+            if (err) { throw err };
             const arr = info.formats.filter(item => item.container === 'mp4');
             const idx = getIndexOfMaxResolution(arr);
             const linkMp4 = arr[idx].url;
@@ -138,7 +142,7 @@ io.sockets.on('connection', function (socket) {
             return resolutionInt;
         });
 
-        console.log("TVT - max resolution = " + Math.max(... resolutionArr));
+        console.log("TVT - max resolution = " + Math.max(...resolutionArr));
         return resolutionArr.findIndex(item => item === Math.max(...resolutionArr));
     }
 })
