@@ -44,6 +44,12 @@ io.sockets.on('connection', function (socket) {
 
     function handleDataReceive(data, socket) {
         switch (data.type) {
+            case 'linkMp4':
+                var object = {};
+                object.type = 'linkMp4';
+                object.data = data.data;
+                sendMessageToClient(socket, object);
+                break;
             case 'user_info':
                 var index = (UserManager.socketList).map(function (item) { return item.id; }).indexOf(socket.id);
                 if (index !== -1) { return; }
@@ -73,14 +79,6 @@ io.sockets.on('connection', function (socket) {
                 handleEvent(socket.id, data);
                 break;
             case 'leave':
-                break;
-            case 'linkMp4':
-                // console.log("link youtube: " + data.path);
-                // sendLinkMp4ToClient(data.path, socket);
-                var object = {};
-                object.type = 'linkMp4';
-                object.data = data.data;
-                sendMessageToClient(socket, object);
                 break;
             default:
         }
