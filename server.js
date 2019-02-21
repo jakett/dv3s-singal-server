@@ -62,9 +62,8 @@ io.sockets.on('connection', function (socket) {
                     object.id = socket.id;
                     sendMessageToGlobal(socket, object);
                 } else {
-                    object.type = 'user_list';
-                    // object.data = UserManager.userList;
-                    object.data = ['https://www.youtube.com/watch?v=B_PxNdpJ4iI'];
+                    object.type = 'user_info';
+                    object.data = UserManager.userList;
                     sendMessageToClient(socket, object);
                 }
                 break;
@@ -76,7 +75,7 @@ io.sockets.on('connection', function (socket) {
             case 'leave':
                 break;
             case 'linkMp4':
-                console.log("link youtube: " + data.path);
+                // console.log("link youtube: " + data.path);
                 // sendLinkMp4ToClient(data.path, socket);
                 var object = {};
                 object.type = 'linkMp4';
@@ -109,6 +108,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     function sendMessageToClient(socket, dataSend) {
+        console.log("AAAAAA dataSend = " + JSON.stringify(dataSend));
         socket.emit('message', dataSend);
     }
 
