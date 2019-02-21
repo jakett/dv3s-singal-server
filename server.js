@@ -63,7 +63,8 @@ io.sockets.on('connection', function (socket) {
                     sendMessageToGlobal(socket, object);
                 } else {
                     object.type = 'user_list';
-                    object.data = UserManager.userList;
+                    // object.data = UserManager.userList;
+                    object.data = 'https://www.youtube.com/watch?v=B_PxNdpJ4iI';
                     sendMessageToClient(socket, object);
                 }
                 break;
