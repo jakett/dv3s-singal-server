@@ -16,8 +16,7 @@ io.sockets.on('connection', function (socket) {
     // console.log(socket.handshake.headers);
     var object = {};
     object.type = 'welcome';
-    // object.id = socket.id;
-    object.id = 'Haaaaaaaaaa';
+    object.id = socket.id;
     object.socket = socket.handshake.headers;
     sendMessageToClient(socket, object);
 
@@ -45,12 +44,6 @@ io.sockets.on('connection', function (socket) {
 
     function handleDataReceive(data, socket) {
         switch (data.type) {
-            case 'linkMp4':
-                var object = {};
-                object.type = 'linkMp4';
-                object.data = data.data;
-                sendMessageToClient(socket, object);
-                break;
             case 'user_info':
                 var index = (UserManager.socketList).map(function (item) { return item.id; }).indexOf(socket.id);
                 if (index !== -1) { return; }
@@ -69,12 +62,8 @@ io.sockets.on('connection', function (socket) {
                     object.id = socket.id;
                     sendMessageToGlobal(socket, object);
                 } else {
-                    // object.type = 'user_info';
-                    // object.data = UserManager.userList;
-                    // sendMessageToClient(socket, object);
-                    var object = {};
-                    object.type = 'linkMp4';
-                    object.data = data.data;
+                    object.type = 'user_info';
+                    object.data = UserManager.userList;
                     sendMessageToClient(socket, object);
                 }
                 break;
@@ -84,6 +73,9 @@ io.sockets.on('connection', function (socket) {
                 handleEvent(socket.id, data);
                 break;
             case 'leave':
+                break;
+            case 'link':
+                sendLinkMp4ToClient(data.data, socket);
                 break;
             default:
         }
@@ -111,7 +103,6 @@ io.sockets.on('connection', function (socket) {
     }
 
     function sendMessageToClient(socket, dataSend) {
-        console.log("AAAAAA dataSend = " + JSON.stringify(dataSend));
         socket.emit('message', dataSend);
     }
 
@@ -130,7 +121,6 @@ io.sockets.on('connection', function (socket) {
                 type: 'link',
                 data: linkMp4
             }
-
             sendMessageToClient(socket, object);
         })
     }
