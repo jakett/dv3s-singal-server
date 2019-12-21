@@ -4,64 +4,66 @@ var io = require('socket.io')(http);
 
 var port = process.env.PORT || 4000;
 
-var UserManager = {
-    userList: [],
-    socketList: []
-}
+var UserManager = [];
 
-io.sockets.on('connection', function(socket) {
+io.sockets.on('connection', function (socket) {
     console.log("A User is connected, socketId = " + socket.id);
-    console.log(socket.handshake.headers);
     var object = {};
     object.type = 'welcome';
     object.id = socket.id;
-    object.socket = socket.handshake.headers;
     sendMessageToClient(socket, object);
-    
-    socket.on('message', function(data) { handleDataReceive(data, socket); });
-    socket.on('disconnect', function() { handleDisconnectUser(socket); });
-    
-    /* -------------------- FUNCTION DEATAILS -------------------- */
-    
-    function handleDisconnectUser(socket) {
-        var index = (UserManager.socketList).map(function(item) { return item.id; }).indexOf(socket.id);
-        if(index !== -1) {
-            var typeDevice = UserManager.userList[index].type_device;
-            
-            (UserManager.socketList).splice(index, 1);
-            (UserManager.userList).splice(index, 1);
 
-            if(typeDevice === 'player') {
-                var object = {};
-                object.type = 'remove_player';
-                object.id = socket.id;
+    socket.on('message', function (data) { handleDataReceive(data, socket); });
+    socket.on('disconnect', function () { handleDisconnectUser(socket); });
+
+    /* -------------------- FUNCTION DEATAILS -------------------- */
+
+    function handleDisconnectUser(socket) {
+        UserManager = UserManager.filter(item => {
+            if (item.socket.id === socket.id) {
+                var object = {
+                    type: 'remove_player',
+                    user: item.user
+                };
                 sendMessageToGlobal(socket, object);
             }
-        }
+            return item.socket.id !== socket.id;
+        })
     }
-    
+
     function handleDataReceive(data, socket) {
-        switch(data.type) {
+        switch (data.type) {
             case 'user_info':
-                var index = (UserManager.socketList).map(function(item) { return item.id; }).indexOf(socket.id);
-                if(index !== -1) { return; }
-                
                 var object = {};
                 var user = {};
-                user.type_device = data.data;
-                user.id = socket.id;
+                user.typeApp = data.data.typeApp;
+                user.userId = data.data.userId;
+                user.userName = data.data.userName;
+                user.browserInfo = data.data.browserInfo;
+                user.startTime = new Date().getTime();
+                user.socketId = socket.id;
                 user.status = 'disconnected';
-                UserManager.userList.push(user);
-                
-                UserManager.socketList.push(socket);
-                
-                if(user.type_device === 'player') {
+
+                console.log("TVT user info = " + JSON.stringify(user));
+
+                const idx = UserManager.map(item => item.socket.id).indexOf(socket.id);
+                if (idx !== -1) {
+                    UserManager[idx].user = user;
+                    UserManager[idx].socket = socket;
+                } else {
+                    UserManager.push({
+                        user: user,
+                        socket: socket
+                    });
+                }
+
+                if (user.typeApp === 'Remote Player') {
                     object.type = 'add_player';
-                    object.id = socket.id;
+                    object.user = user;
                     sendMessageToGlobal(socket, object);
                 } else {
                     object.type = 'user_list';
-                    object.data = UserManager.userList;
+                    object.data = UserManager.map(item => item.user);
                     sendMessageToClient(socket, object);
                 }
                 break;
@@ -75,11 +77,11 @@ io.sockets.on('connection', function(socket) {
             default:
         }
     }
-    
+
     function handleEvent(socketId, data) {
         var destinationId = data.id;
         var socketClient = getSocketClient(destinationId);
-        if(socketClient !== null) {
+        if (socketClient !== null) {
             var object = {};
             object.id = socketId;
             object.type = data.type;
@@ -87,29 +89,29 @@ io.sockets.on('connection', function(socket) {
             sendMessageToClient(socketClient, object);
         }
     }
-    
+
     function getSocketClient(id) {
         var socketClient = null;
-        var idx = UserManager.socketList.map(function(item) { return item.id; }).indexOf(id);
-        if(idx !== -1) {
-            socketClient = UserManager.socketList[idx];
+        var idx = UserManager.map(item => item.socket.id).indexOf(id);
+        if (idx !== -1) {
+            socketClient = UserManager[idx].socket;
         }
         return socketClient;
     }
-    
+
     function sendMessageToClient(socket, dataSend) {
         socket.emit('message', dataSend);
     }
-    
+
     function sendMessageToGlobal(socket, dataSend) {
         socket.broadcast.emit('message', dataSend);
     }
-})  
+})
 
-app.get('/', function(req, res){
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-http.listen(port, function(){
-  console.log('listening on *:' + port);
+http.listen(port, function () {
+    console.log('listening on *:' + port);
 });
