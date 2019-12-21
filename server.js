@@ -6,6 +6,7 @@ var port = process.env.PORT || 4000;
 
 var UserManager = [];
 
+
 io.sockets.on('connection', function (socket) {
     console.log("A User is connected, socketId = " + socket.id);
     var object = {};
